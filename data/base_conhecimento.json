@@ -1,0 +1,86 @@
+[
+  {
+    "id": "carro-preso",
+    "pergunta": "O que faço se meu carro ficar preso na água?",
+    "palavras": ["carro", "preso", "veiculo", "dirigindo", "motor", "ilhado", "agua", "subindo"],
+    "resposta": "Se a água estiver subindo, saia do carro e vá para um lugar alto. Não tente ligar o motor de novo nem empurrar o carro dentro da água. Se não conseguir sair com segurança, ligue 193 (Bombeiros).",
+    "fonte": "Orientações de segurança da Defesa Civil para alagamentos (resumo da equipe)"
+  },
+  {
+    "id": "atravessar",
+    "pergunta": "Posso atravessar uma rua alagada?",
+    "palavras": ["atravessar", "passar", "rua", "alagada", "pe", "andar", "correnteza", "profundidade"],
+    "resposta": "Não. Pouca água em movimento já derruba uma pessoa, e um carro pode ser arrastado com a água na altura do meio da roda. A água também esconde buracos e bueiros abertos. Espere a água baixar ou procure outro caminho.",
+    "fonte": "Orientações de segurança da Defesa Civil para alagamentos (resumo da equipe)"
+  },
+  {
+    "id": "durante-chuva-casa",
+    "pergunta": "O que fazer se a água começar a entrar em casa?",
+    "palavras": ["casa", "entrar", "invadir", "imovel", "moradia", "dentro", "agua", "energia", "luz", "desligar"],
+    "resposta": "Desligue a energia no disjuntor se puder fazer isso sem pisar na água. Leve documentos, remédios e pessoas para o ponto mais alto da casa. Se a água continuar subindo, saia para um lugar seguro e ligue 199 (Defesa Civil).",
+    "fonte": "Orientações de segurança da Defesa Civil para alagamentos (resumo da equipe)"
+  },
+  {
+    "id": "fios",
+    "pergunta": "Tem fio de energia caído na água, o que faço?",
+    "palavras": ["fio", "fios", "energia", "eletrico", "poste", "choque", "caido"],
+    "resposta": "Fique longe e não toque na água perto do fio. Avise a distribuidora de energia e, em caso de risco imediato, ligue 193 (Bombeiros).",
+    "fonte": "Orientações de segurança da Defesa Civil para alagamentos (resumo da equipe)"
+  },
+  {
+    "id": "depois-agua",
+    "pergunta": "Tive contato com água de enchente, corro risco?",
+    "palavras": ["contato", "molhei", "pisei", "doenca", "leptospirose", "saude", "febre", "depois", "lama"],
+    "resposta": "Água de enchente pode transmitir leptospirose. Lave bem a pele com água limpa e sabão. Se tiver febre, dor no corpo ou dor na panturrilha nos dias seguintes, procure uma unidade de saúde e conte que teve contato com água de enchente.",
+    "fonte": "Orientações de saúde pública sobre enchentes (resumo da equipe)"
+  },
+  {
+    "id": "telefones",
+    "pergunta": "Para quem eu ligo em emergência?",
+    "palavras": ["ligar", "telefone", "numero", "emergencia", "socorro", "ajuda", "contato", "chamar"],
+    "resposta": "Defesa Civil: 199. Bombeiros: 193. SAMU: 192. Na cidade de São Paulo, problemas como bueiro entupido podem ser registrados no 156.",
+    "fonte": "Telefones públicos de emergência (resumo da equipe)"
+  },
+  {
+    "id": "bueiro",
+    "pergunta": "Vi um bueiro entupido, o que faço?",
+    "palavras": ["bueiro", "entupido", "boca", "lobo", "lixo", "entulho", "drenagem", "galeria"],
+    "resposta": "Mande uma foto pelo Alaga Alerta escolhendo o seu bairro, e registre também na prefeitura (156 na cidade de São Paulo). Não tente desentupir durante a chuva.",
+    "fonte": "Canais de zeladoria da Prefeitura de São Paulo (resumo da equipe)"
+  },
+  {
+    "id": "sms-defesa-civil",
+    "pergunta": "Como recebo alertas oficiais da Defesa Civil?",
+    "palavras": ["receber", "alertas", "oficial", "sms", "40199", "cadastrar", "cep", "celular", "aviso"],
+    "resposta": "Envie o CEP da sua casa por SMS para 40199 para receber os alertas oficiais da Defesa Civil. Alertas severos também chegam sozinhos nos celulares 4G e 5G da área de risco, sem cadastro.",
+    "fonte": "Defesa Civil Alerta / SMS 40199 (resumo da equipe)"
+  },
+  {
+    "id": "niveis",
+    "pergunta": "O que significam os níveis de risco do Alaga Alerta?",
+    "palavras": ["nivel", "niveis", "significa", "cor", "baixo", "atencao", "alto", "risco", "mapa"],
+    "resposta": "Baixo: não há alagamento previsto nas próximas horas. Atenção: pode alagar, evite ruas que costumam encher. Alto: risco alto de alagamento ou alagamento já confirmado; adie a saída se puder e nunca atravesse água.",
+    "fonte": "Regras do Alaga Alerta"
+  },
+  {
+    "id": "como-funciona",
+    "pergunta": "De onde vem o risco mostrado no mapa?",
+    "palavras": ["como", "funciona", "calcula", "dados", "fonte", "previsao", "sensor", "vem"],
+    "resposta": "O risco junta a previsão de chuva por bairro, a sensibilidade de cada bairro a alagamentos, a leitura dos sensores nos bueiros e as fotos de moradores confirmadas pela inteligência artificial.",
+    "fonte": "Regras do Alaga Alerta"
+  },
+  {
+    "id": "criancas-idosos",
+    "pergunta": "Como proteger crianças, idosos e pessoas com deficiência?",
+    "palavras": ["crianca", "criancas", "idoso", "idosos", "deficiencia", "cadeirante", "mobilidade", "proteger", "familia"],
+    "resposta": "Combine antes um lugar alto e seguro para onde ir. Saia cedo, assim que o nível estiver em atenção, com quem tem mais dificuldade de locomoção. Deixe remédios e documentos numa sacola fácil de pegar.",
+    "fonte": "Orientações de segurança da Defesa Civil para alagamentos (resumo da equipe)"
+  },
+  {
+    "id": "privacidade",
+    "pergunta": "O que vocês fazem com a minha foto e meus dados?",
+    "palavras": ["dados", "privacidade", "foto", "lgpd", "rosto", "placa", "guardam", "armazenam", "pessoal"],
+    "resposta": "O Alaga Alerta não pede nome, telefone nem localização exata. A foto é analisada para identificar alagamento e o que fica guardado é só o resultado: tipo de ocorrência, bairro e horário. Rostos e placas são borrados antes de qualquer armazenamento.",
+    "fonte": "Política de dados do Alaga Alerta"
+  }
+]

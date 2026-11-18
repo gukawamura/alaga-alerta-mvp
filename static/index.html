@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f1f5f9">
+  <title>Alaga Alerta — risco de alagamento por bairro</title>
+  <meta name="description" content="Saiba antes se a sua rua vai alagar e o que fazer.">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo-interno">
+      <a class="marca" href="#conteudo"><span class="marca-icone" aria-hidden="true"></span>Alaga Alerta</a>
+      <nav aria-label="Navegação principal">
+        <a href="#mapa-risco">Mapa</a>
+        <a href="#alertas-ativos">Alertas</a>
+        <a href="#assistente">Assistente</a>
+      </nav>
+      <a class="emergencia" href="tel:199">Defesa Civil <strong>199</strong></a>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <div class="introducao">
+      <div>
+        <p class="cidade"><span aria-hidden="true"></span> São Paulo, SP</p>
+        <h1>Risco de alagamento</h1>
+        <p>Acompanhe seu bairro e os avisos da Defesa Civil.</p>
+      </div>
+      <dl class="resumo-risco" aria-label="Resumo por nível de risco">
+        <div><dt><span class="ponto alto"></span> Alto</dt><dd id="total-alto">—</dd></div>
+        <div><dt><span class="ponto atencao"></span> Atenção</dt><dd id="total-atencao">—</dd></div>
+        <div><dt><span class="ponto baixo"></span> Baixo</dt><dd id="total-baixo">—</dd></div>
+        <div><dt><span class="ponto indisponivel"></span> Sem dados</dt><dd id="total-indisponivel">—</dd></div>
+      </dl>
+    </div>
+    <div id="aviso-geral" class="aviso-geral" role="alert" hidden></div>
+
+    <div class="painel-principal">
+    <div class="painel-lateral">
+    <section aria-labelledby="t-meu-bairro" class="cartao painel-bairro">
+      <h2 id="t-meu-bairro">Meu bairro</h2>
+      <label for="sel-bairro">Escolha o seu bairro</label>
+      <select id="sel-bairro"></select>
+      <div id="meu-risco" class="meu-risco" aria-live="polite"></div>
+    </section>
+
+    <section id="alertas-ativos" aria-labelledby="t-alertas" class="cartao painel-alertas">
+      <h2 id="t-alertas">Alertas ativos</h2>
+      <h3>Defesa Civil · São Paulo (capital)</h3>
+      <p id="avisos-oficiais-status" class="mudo" role="status">Consultando avisos oficiais…</p>
+      <ul id="avisos-oficiais" class="lista"></ul>
+      <h3>Alertas do Alaga Alerta</h3>
+      <ul id="lista-alertas" class="lista" aria-live="polite"></ul>
+    </section>
+    </div>
+
+    <section id="mapa-risco" aria-labelledby="t-mapa" class="cartao painel-mapa">
+      <div class="mapa-cabecalho">
+        <div><h2 id="t-mapa">Risco agora, por bairro</h2><p class="mudo">Previsão para as próximas 3 horas e sinais em tempo real.</p></div>
+        <time id="mapa-atualizado" class="carimbo" hidden></time>
+      </div>
+      <p class="legenda">
+        <span class="selo selo-baixo">Baixo</span>
+        <span class="selo selo-atencao">Atenção</span>
+        <span class="selo selo-alto">Alto</span>
+        <span class="selo selo-indisponivel">Previsão indisponível</span>
+        <span class="legenda-ocorrencia"><span class="ponto ocorrencia"></span> Ocorrência confirmada</span>
+      </p>
+      <div id="mapa" class="mapa" role="region" aria-label="Mapa de risco. A mesma informação está na tabela abaixo."></div>
+      <p id="mapa-status" class="mudo" role="status" hidden>O mapa de ruas está temporariamente indisponível. Os pontos e a tabela continuam disponíveis.</p>
+      <details class="lista-bairros">
+        <summary>Ver tabela de bairros</summary>
+        <table class="tabela" aria-describedby="t-mapa">
+        <caption class="sr">Risco de alagamento por bairro</caption>
+        <thead><tr><th scope="col">Bairro</th><th scope="col">Zona</th><th scope="col">Risco</th><th scope="col">Por quê</th></tr></thead>
+        <tbody id="tabela-risco"></tbody>
+        </table>
+      </details>
+    </section>
+    </div>
+
+    <section id="assistente" aria-labelledby="t-assistente" class="cartao">
+      <h2 id="t-assistente">Pergunte ao assistente</h2>
+      <p class="mudo">Responde com base nas orientações da Defesa Civil e diz quando não sabe. Não escreva dados pessoais.</p>
+      <div id="chat" class="chat" aria-live="polite"></div>
+      <form id="form-pergunta" class="linha">
+        <label for="pergunta" class="sr">Sua pergunta</label>
+        <input id="pergunta" name="pergunta" type="text" maxlength="500" autocomplete="off"
+               placeholder="Ex.: o que faço se meu carro ficar preso na água?" required>
+        <button type="submit">Perguntar</button>
+      </form>
+      <div class="sugestoes">
+        <button type="button" class="chip" data-pergunta="O que faço se meu carro ficar preso na água?">Carro preso na água</button>
+        <button type="button" class="chip" data-pergunta="Posso atravessar uma rua alagada?">Atravessar rua alagada</button>
+        <button type="button" class="chip" data-pergunta="Para quem eu ligo em emergência?">Telefones de emergência</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-foto" class="cartao">
+      <h2 id="t-foto">Viu alagamento? Mande uma foto</h2>
+      <p class="mudo">O serviço de visão analisa a foto durante o envio. Envie imagens sem rostos ou placas visíveis.</p>
+      <form id="form-foto">
+        <label for="foto-bairro">Bairro da foto</label>
+        <select id="foto-bairro" name="bairro_id" required></select>
+        <label for="foto-arquivo">Foto (JPG, PNG ou WEBP, até 5 MB)</label>
+        <input id="foto-arquivo" name="arquivo" type="file" accept="image/jpeg,image/png,image/webp" required>
+        <button type="submit">Enviar foto</button>
+      </form>
+      <p id="foto-status" class="status" aria-live="polite"></p>
+    </section>
+
+    <section aria-labelledby="t-sensores" class="cartao">
+      <h2 id="t-sensores">Sensores nos bueiros</h2>
+      <ul id="lista-leituras" class="lista"></ul>
+      <div id="simulacao-bueiros" hidden>
+        <h3>Simulação de bueiros</h3>
+        <p class="mudo">Níveis ilustrativos calculados com a previsão do Open-Meteo. Leituras reais aparecem acima quando disponíveis.</p>
+        <ul id="lista-leituras-simuladas" class="lista"></ul>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-ocorrencias" class="cartao">
+      <h2 id="t-ocorrencias">Ocorrências nas últimas 24 horas</h2>
+      <ul id="lista-ocorrencias" class="lista"></ul>
+    </section>
+
+    <section aria-labelledby="t-indicadores" class="cartao largo">
+      <h2 id="t-indicadores">Indicadores de impacto</h2>
+      <p id="ind-nota" class="mudo"></p>
+      <dl id="indicadores" class="indicadores"></dl>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p><strong>Emergência:</strong> Defesa Civil 199 · Bombeiros 193 · SAMU 192</p>
+    <p>Dados: previsão de chuva (Open-Meteo), boletins do CGE e da Defesa Civil, população (IBGE), sensores e fotos de moradores. O Alaga Alerta complementa, e não substitui, os alertas oficiais da Defesa Civil.</p>
+    <p>Mapa: © colaboradores do OpenStreetMap. Projeto acadêmico FIAP · Global Solution 2026.2.</p>
+  </footer>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

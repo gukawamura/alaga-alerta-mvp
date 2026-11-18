@@ -1,0 +1,19 @@
+services:
+  api:
+    build: .
+    image: alaga-alerta-api:local
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - dados:/data
+    restart: unless-stopped
+    # Os serviços das outras disciplinas entram aqui quando estiverem prontos.
+    # Exemplo:
+    # assistente:
+    #   image: ghcr.io/SEU-USUARIO/alaga-assistente:latest
+    #   expose: ["9000"]
+    # e no .env: ASSISTENTE_URL=http://assistente:9000/assistente
+
+volumes:
+  dados:

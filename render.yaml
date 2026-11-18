@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: alaga-alerta-mvp
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: API_KEY
+        generateValue: true
+      - key: DB_PATH
+        value: /data/alaga.db
+      - key: DADOS_DEMO
+        value: "0"
+      - key: SEED_AUTOMATICO
+        value: "0"
+      - key: FONTES_PUBLICAS
+        value: "1"
+      - key: SIMULAR_BUEIROS
+        value: "1"

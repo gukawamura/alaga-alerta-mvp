@@ -1,0 +1,23 @@
+id,nome,zona,lat,lon,populacao,sensibilidade
+jardim-pantanal,Jardim Pantanal (Jardim Helena),Leste,-23.4920,-46.4180,135000,1.40
+itaim-paulista,Itaim Paulista,Leste,-23.5000,-46.3980,224000,1.15
+vila-formosa,Vila Formosa,Leste,-23.5660,-46.5470,94000,1.30
+aricanduva,Aricanduva,Leste,-23.5780,-46.5110,89000,1.25
+penha,Penha,Leste,-23.5240,-46.5420,127000,1.20
+mooca,Mooca,Sudeste,-23.5590,-46.5990,75000,1.20
+ipiranga,Ipiranga,Sudeste,-23.5890,-46.6070,106000,1.10
+tremembe,Tremembé,Norte,-23.4580,-46.6040,197000,1.10
+jacana,Jaçanã,Norte,-23.4640,-46.5810,94000,1.15
+vila-medeiros,Vila Medeiros,Norte,-23.4910,-46.5800,129000,1.15
+santana,Santana,Norte,-23.5020,-46.6250,118000,1.00
+se-anhangabau,Sé / Vale do Anhangabaú,Centro,-23.5470,-46.6370,23000,1.35
+lapa,Lapa,Oeste,-23.5250,-46.7020,65000,1.05
+pinheiros,Pinheiros,Oeste,-23.5670,-46.6920,65000,1.00
+perus,Perus,Norte,-23.4050,-46.7530,146000,0.90
+vila-maria,Vila Maria,Norte,-23.5120,-46.5860,113845,1.00
+jaguare,Jaguaré,Oeste,-23.5460,-46.7600,49863,1.00
+vila-prudente,Vila Prudente,Sudeste,-23.5840,-46.5800,103838,1.00
+santo-amaro,Santo Amaro,Sul,-23.6550,-46.7050,71316,1.00
+jardim-angela,Jardim Ângela,Sul,-23.6830,-46.7660,295434,1.00
+butanta,Butantã,Oeste,-23.5710,-46.7280,54196,1.00
+jabaquara,Jabaquara,Sul,-23.6486,-46.6406,223000,1.20
