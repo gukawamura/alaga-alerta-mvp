@@ -163,13 +163,4 @@ tests/          pytest
 docs/           contratos de integração, dados simulados, prints
 ```
 
-## Repositórios das outras disciplinas
 
-| Disciplina | Repositório |
-| --- | --- |
-| Big Data | PREENCHER |
-| Generative AI | PREENCHER |
-| Applied Computer Vision | PREENCHER |
-| Robotic Process Automation | PREENCHER |
-| Secure DevOps & Cloud | PREENCHER |
-| Project-Based Maker Lab | PREENCHER |
