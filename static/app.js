@@ -6,7 +6,7 @@
 
   const NOMES = { baixo: "Baixo", atencao: "Atenção", alto: "Alto", indisponivel: "Previsão indisponível" };
   const CORES = { baixo: "#1b6e35", atencao: "#b07400", alto: "#a8201a", indisponivel: "#475569" };
-  const FONTES_PREVISAO = { ouro: "Ouro (Databricks)", "open-meteo": "Open-Meteo", simulado: "Simulação", demo: "Simulação" };
+  const FONTES_PREVISAO = { ouro: "Ouro (Databricks)", "open-meteo": "Open-Meteo", "dwd-mosmix": "DWD MOSMIX (previsão regional)", simulado: "Simulação", demo: "Simulação" };
   const TIPOS = {
     rua_alagada: "Rua alagada",
     veiculo_submerso: "Veículo submerso",

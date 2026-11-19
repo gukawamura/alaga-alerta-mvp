@@ -23,7 +23,7 @@ Global Solution 2026.2 · FIAP · Engenharia de Software 4º ano · CitizenTech
 | Problema, em uma frase | Alertas de chuva são genéricos e chegam tarde para quem precisa decidir sair ou desviar |
 | Proposta de valor | Risco de alagamento por bairro, em tempo útil, com orientação do que fazer |
 | Arquitetura | API central FastAPI, SQLite e site. O diagrama abaixo mostra os contratos dos componentes. |
-| Fontes de dados | Open-Meteo para previsão horária, IDAP para avisos oficiais da Defesa Civil e catálogo de bairros para população estimada. O cenário de demonstração está descrito em [Dados simulados](docs/DADOS_SIMULADOS.md). |
+| Fontes de dados | Open-Meteo para previsão horária, DWD MOSMIX para previsão regional de contingência, IDAP para avisos oficiais da Defesa Civil e catálogo de bairros para população estimada. O cenário de demonstração está descrito em [Dados simulados](docs/DADOS_SIMULADOS.md). |
 | Modelo de IA validado | Llama 3.2 3B no Ollama, com RAG e citação de fontes. Validação pela API do MVP local. |
 | URL do MVP e repositório | [MVP público](https://alaga-alerta-mvp.onrender.com/) · [Código no GitHub](https://github.com/gukawamura/alaga-alerta-mvp) |
 | Indicadores de impacto | Antecedência média do alerta, taxa de acerto, cobertura de ocorrências, população monitorada (`GET /indicadores`) |
@@ -126,6 +126,12 @@ da Defesa Civil pelo IDAP, com atualizações a cada 30 e 10 minutos,
 respectivamente. O risco calculado pelo MVP e os avisos oficiais aparecem
 em áreas próprias. O recorte do IDAP usa o município indicado no aviso
 ou polígonos que cobrem pontos do catálogo de bairros.
+
+Quando o Open-Meteo limita a coleta, o mapa usa a previsão regional do
+[DWD MOSMIX](https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/).
+Cada bairro usa o ponto de previsão disponível mais próximo entre São Paulo e
+Guarulhos. O mapa identifica essa origem, e previsões já disponíveis da
+Ouro ou do Open-Meteo têm prioridade.
 
 Em Aricanduva, Penha e Vila Formosa, o painel pode exibir uma simulação
 de bueiro conforme a chuva horária prevista pelo Open-Meteo. Sem previsão

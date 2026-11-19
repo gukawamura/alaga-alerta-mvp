@@ -1,10 +1,13 @@
-"""Previsão do Open-Meteo e avisos públicos da Defesa Civil (IDAP)."""
+"""Previsão do Open-Meteo e DWD, e avisos públicos da Defesa Civil (IDAP)."""
 import asyncio
+import io
 import logging
+import math
 import re
 import unicodedata
 from urllib.parse import urlparse
 from xml.etree import ElementTree
+from zipfile import BadZipFile, ZipFile
 
 import httpx
 
@@ -15,6 +18,9 @@ from scripts.coletar_previsao import OPEN_METEO, montar_linhas
 IDAP_URL = "https://idapfile.mdr.gov.br/idap/api/rss/cap"
 CAP = "{urn:oasis:names:tc:emergency:cap:1.2}"
 ATOM = "{http://www.w3.org/2005/Atom}"
+DWD = "{https://opendata.dwd.de/weather/lib/pointforecast_dwd_extension_V1_0.xsd}"
+DWD_MOSMIX = "https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/single_stations"
+DWD_PONTOS = {"83779": (-23.43, -46.47), "83780": (-23.62, -46.65)}
 log = logging.getLogger(__name__)
 
 
@@ -116,9 +122,7 @@ async def coletar_idap(cliente, estado):
     estado.update(status="ok", atualizado_em=iso(referencia), avisos=avisos)
 
 
-async def coletar_previsao(cliente):
-    bairros = db.consultar("SELECT id,lat,lon,sensibilidade FROM bairros ORDER BY id")
-    referencia = agora()
+async def _lotes_open_meteo(cliente, bairros):
     resposta = await cliente.get(OPEN_METEO, params={
         "latitude": ",".join(str(b["lat"]) for b in bairros),
         "longitude": ",".join(str(b["lon"]) for b in bairros),
@@ -126,21 +130,74 @@ async def coletar_previsao(cliente):
     })
     resposta.raise_for_status()
     lotes = resposta.json()
+    if isinstance(lotes, dict) and len(bairros) == 1:
+        lotes = [lotes]
     if not isinstance(lotes, list) or len(lotes) != len(bairros):
         raise ValueError("Número de locais diferente do solicitado ao Open-Meteo")
+    return lotes
+
+
+def _ler_mosmix(dados):
+    with ZipFile(io.BytesIO(dados)) as arquivo:
+        arquivos = arquivo.infolist()
+        if len(arquivos) != 1 or arquivos[0].file_size > 2 * 1024 * 1024:
+            raise ValueError("Arquivo MOSMIX fora do formato esperado")
+        raiz = ElementTree.fromstring(arquivo.read(arquivos[0]))
+    horarios = [item.text for item in raiz.iter(DWD + "TimeStep")]
+    valores = raiz.findtext(f".//{DWD}Forecast[@{DWD}elementName='RR1c']/{DWD}value")
+    if not horarios or not valores:
+        raise ValueError("MOSMIX sem previsão horária de chuva")
+    # RR1c (kg/m², equivalente a mm) acumula a chuva na hora que termina no horário informado.
+    chuva = [None if v == "-" else float(v) for v in valores.split()]
+    return {"hourly": {"time": horarios, "precipitation": chuva}}
+
+
+async def _lotes_dwd(cliente, bairros):
+    lotes = {}
+    for ponto in DWD_PONTOS:
+        try:
+            resposta = await cliente.get(f"{DWD_MOSMIX}/{ponto}/kml/MOSMIX_L_LATEST_{ponto}.kmz")
+            resposta.raise_for_status()
+            lotes[ponto] = _ler_mosmix(resposta.content)
+        except (httpx.HTTPError, ValueError, BadZipFile, ElementTree.ParseError):
+            log.warning("Previsão regional do DWD indisponível para o ponto %s", ponto)
+    if not lotes:
+        raise ValueError("DWD não retornou previsão")
+    return [
+        lotes[min(lotes, key=lambda ponto: math.hypot(
+            bairro["lat"] - DWD_PONTOS[ponto][0],
+            (bairro["lon"] - DWD_PONTOS[ponto][1]) * math.cos(math.radians(bairro["lat"])),
+        ))]
+        for bairro in bairros
+    ]
+
+
+async def coletar_previsao(cliente):
+    bairros = db.consultar("SELECT id,lat,lon,sensibilidade FROM bairros ORDER BY id")
+    referencia = hora_cheia(agora())
+    fonte = "open-meteo"
+    try:
+        lotes = await _lotes_open_meteo(cliente, bairros)
+    except httpx.HTTPStatusError as erro:
+        if erro.response.status_code != 429:
+            raise
+        log.warning("Open-Meteo limitou a coleta (HTTP 429). Consultando a previsão regional do DWD.")
+        lotes = await _lotes_dwd(cliente, bairros)
+        fonte = "dwd-mosmix"
     linhas = []
     for bairro, lote in zip(bairros, lotes, strict=True):
-        for item in montar_linhas(bairro["id"], lote, referencia=hora_cheia(referencia)):
+        for item in montar_linhas(bairro["id"], lote, referencia=referencia):
             score = round(item["chuva_mm"] * bairro["sensibilidade"], 1)
-            linhas.append((bairro["id"], item["hora"], item["chuva_mm"], score, nivel_por_score(score)))
+            linhas.append((bairro["id"], item["hora"], item["chuva_mm"], score, nivel_por_score(score), fonte))
     if not linhas:
-        raise ValueError("Open-Meteo não retornou previsão vigente")
+        raise ValueError("A fonte não retornou previsão vigente")
     with db.transacao() as conn:
         conn.executemany(
-            "INSERT INTO risco_bairro_hora VALUES (?,?,?,?,?,'open-meteo')"
+            "INSERT INTO risco_bairro_hora VALUES (?,?,?,?,?,?)"
             " ON CONFLICT(bairro_id,hora) DO UPDATE SET chuva_mm=excluded.chuva_mm,"
             " score=excluded.score,nivel=excluded.nivel,fonte=excluded.fonte"
-            " WHERE risco_bairro_hora.fonte!='ouro'",
+            " WHERE risco_bairro_hora.fonte!='ouro'"
+            " AND (excluded.fonte='open-meteo' OR risco_bairro_hora.fonte!='open-meteo')",
             linhas,
         )
 

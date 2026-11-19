@@ -1,9 +1,12 @@
 """Testes da API central do Alaga Alerta (rodar com: pytest -q)."""
+import asyncio
 import io
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+from zipfile import ZipFile
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -52,6 +55,44 @@ def test_documentacao_interativa(cliente):
     r = cliente.get("/docs")
     assert r.status_code == 200 and "Content-Security-Policy" not in r.headers
     assert "/leituras" in cliente.get("/openapi.json").text
+
+
+def test_previsao_regional_quando_open_meteo_limita(cliente, monkeypatch):
+    referencia = hora_cheia(agora())
+    monkeypatch.setattr(fontes, "agora", lambda: referencia)
+    arquivo = io.BytesIO()
+    with ZipFile(arquivo, "w") as kmz:
+        kmz.writestr("previsao.kml", f"""
+            <kml xmlns:dwd="{fontes.DWD[1:-1]}">
+              <dwd:TimeStep>{referencia.isoformat()}</dwd:TimeStep>
+              <dwd:Forecast dwd:elementName="RR1c"><dwd:value>2.50</dwd:value></dwd:Forecast>
+            </kml>
+        """)
+
+    def responder(requisicao):
+        if requisicao.url.host == "api.open-meteo.com":
+            return httpx.Response(429)
+        assert requisicao.url.host == "opendata.dwd.de"
+        return httpx.Response(200, content=arquivo.getvalue())
+
+    with db.transacao() as conn:
+        conn.execute("DELETE FROM risco_bairro_hora")
+        conn.executemany(
+            "INSERT INTO risco_bairro_hora VALUES (?, ?, 1, 1, 'baixo', ?)",
+            [("penha", referencia.isoformat(), "ouro"), ("aricanduva", referencia.isoformat(), "open-meteo")],
+        )
+
+    async def coletar():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(responder)) as http:
+            await fontes.coletar_previsao(http)
+
+    asyncio.run(coletar())
+    risco = {area["bairro_id"]: area for area in cliente.get("/risco/agora").json()}
+    assert risco["penha"]["fontes_previsao"] == ["ouro"]
+    assert risco["aricanduva"]["fontes_previsao"] == ["open-meteo"]
+    demais = [area for bairro, area in risco.items() if bairro not in {"penha", "aricanduva"}]
+    assert len(demais) == 20
+    assert all(area["fontes_previsao"] == ["dwd-mosmix"] and area["chuva_prevista_mm"] == 2.5 for area in demais)
 
 
 def test_metrics(cliente):
