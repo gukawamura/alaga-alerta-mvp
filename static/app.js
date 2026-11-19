@@ -20,6 +20,7 @@
   let mapa = null;
   let camadaRisco = null;
   let camadaOcorrencias = null;
+  let mapaEnquadrado = false;
   let riscoAtual = [];
   let bairrosCarregados = false;
 
@@ -139,6 +140,11 @@
 
   function renderMapa() {
     if (!mapa || !camadaRisco) return;
+    if (!mapaEnquadrado && riscoAtual.length) {
+      const limites = L.latLngBounds(riscoAtual.map((bairro) => [bairro.lat, bairro.lon]));
+      mapa.fitBounds(limites, { padding: [28, 28], maxZoom: 12, animate: false });
+      mapaEnquadrado = true;
+    }
     camadaRisco.clearLayers();
     for (const r of riscoAtual) {
       const raio = r.nivel === "alto" ? 1400 : r.nivel === "atencao" ? 1100 : 800;
@@ -367,7 +373,7 @@
       aviso.hidden = false;
       aviso.append("Abra o MVP pelo servidor local para usar o mapa, o chat e os alertas. ",
         el("a", { href: "http://127.0.0.1:8000/" }, "Abrir o Alaga Alerta"));
-      document.querySelectorAll("main section").forEach((secao) => { secao.hidden = true; });
+      document.querySelectorAll("main section:not(.introducao)").forEach((secao) => { secao.hidden = true; });
       return;
     }
     iniciarMapa(); iniciarAssistente(); iniciarFoto();

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f1f5f9">
   <title>Alaga Alerta — risco de alagamento por bairro</title>
-  <meta name="description" content="Saiba antes se a sua rua vai alagar e o que fazer.">
+  <meta name="description" content="Consulte o risco de alagamento por bairro em São Paulo e acompanhe os avisos da Defesa Civil.">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -14,7 +14,10 @@
 
   <header class="topo">
     <div class="topo-interno">
-      <a class="marca" href="#conteudo"><span class="marca-icone" aria-hidden="true"></span>Alaga Alerta</a>
+      <a class="marca" href="#conteudo">
+        <span class="marca-icone" aria-hidden="true"></span>
+        Alaga Alerta
+      </a>
       <nav aria-label="Navegação principal">
         <a href="#mapa-risco">Mapa</a>
         <a href="#alertas-ativos">Alertas</a>
@@ -25,63 +28,88 @@
   </header>
 
   <main id="conteudo">
-    <div class="introducao">
+    <section class="introducao" aria-labelledby="t-intro">
       <div>
         <p class="cidade"><span aria-hidden="true"></span> São Paulo, SP</p>
-        <h1>Risco de alagamento</h1>
+        <h1 id="t-intro">Risco de alagamento</h1>
         <p>Acompanhe seu bairro e os avisos da Defesa Civil.</p>
       </div>
       <dl class="resumo-risco" aria-label="Resumo por nível de risco">
-        <div><dt><span class="ponto alto"></span> Alto</dt><dd id="total-alto">—</dd></div>
-        <div><dt><span class="ponto atencao"></span> Atenção</dt><dd id="total-atencao">—</dd></div>
-        <div><dt><span class="ponto baixo"></span> Baixo</dt><dd id="total-baixo">—</dd></div>
-        <div><dt><span class="ponto indisponivel"></span> Sem dados</dt><dd id="total-indisponivel">—</dd></div>
+        <div>
+          <dt><span class="ponto alto" aria-hidden="true"></span> Alto</dt>
+          <dd id="total-alto">—</dd>
+        </div>
+        <div>
+          <dt><span class="ponto atencao" aria-hidden="true"></span> Atenção</dt>
+          <dd id="total-atencao">—</dd>
+        </div>
+        <div>
+          <dt><span class="ponto baixo" aria-hidden="true"></span> Baixo</dt>
+          <dd id="total-baixo">—</dd>
+        </div>
+        <div>
+          <dt><span class="ponto indisponivel" aria-hidden="true"></span> Sem dados</dt>
+          <dd id="total-indisponivel">—</dd>
+        </div>
       </dl>
-    </div>
+    </section>
     <div id="aviso-geral" class="aviso-geral" role="alert" hidden></div>
 
     <div class="painel-principal">
-    <div class="painel-lateral">
-    <section aria-labelledby="t-meu-bairro" class="cartao painel-bairro">
-      <h2 id="t-meu-bairro">Meu bairro</h2>
-      <label for="sel-bairro">Escolha o seu bairro</label>
-      <select id="sel-bairro"></select>
-      <div id="meu-risco" class="meu-risco" aria-live="polite"></div>
-    </section>
+      <section class="cartao painel-bairro" aria-labelledby="t-meu-bairro">
+        <h2 id="t-meu-bairro">Meu bairro</h2>
+        <label for="sel-bairro">Escolha o seu bairro</label>
+        <select id="sel-bairro"></select>
+        <div id="meu-risco" class="meu-risco" aria-live="polite"></div>
+      </section>
 
-    <section id="alertas-ativos" aria-labelledby="t-alertas" class="cartao painel-alertas">
-      <h2 id="t-alertas">Alertas ativos</h2>
-      <h3>Defesa Civil · São Paulo (capital)</h3>
-      <p id="avisos-oficiais-status" class="mudo" role="status">Consultando avisos oficiais…</p>
-      <ul id="avisos-oficiais" class="lista"></ul>
-      <h3>Alertas do Alaga Alerta</h3>
-      <ul id="lista-alertas" class="lista" aria-live="polite"></ul>
-    </section>
-    </div>
+      <section id="mapa-risco" class="cartao painel-mapa" aria-labelledby="t-mapa">
+        <div class="mapa-cabecalho">
+          <div>
+            <h2 id="t-mapa">Risco agora, por bairro</h2>
+            <p class="mudo">Previsão para as próximas 3 horas e sinais em tempo real.</p>
+          </div>
+          <time id="mapa-atualizado" class="carimbo" hidden></time>
+        </div>
+        <p class="legenda">
+          <span class="selo selo-baixo">Baixo</span>
+          <span class="selo selo-atencao">Atenção</span>
+          <span class="selo selo-alto">Alto</span>
+          <span class="selo selo-indisponivel">Previsão indisponível</span>
+          <span class="legenda-ocorrencia">
+            <span class="ponto ocorrencia" aria-hidden="true"></span>
+            Ocorrência confirmada
+          </span>
+        </p>
+        <div id="mapa" class="mapa" role="region" aria-label="Mapa de risco. A mesma informação está na tabela abaixo."></div>
+        <p id="mapa-status" class="mudo" role="status" hidden>O mapa de ruas está temporariamente indisponível. Os pontos e a tabela continuam disponíveis.</p>
+        <details class="lista-bairros">
+          <summary>Ver tabela de bairros</summary>
+          <div class="tabela-rolagem" tabindex="0" role="region" aria-label="Tabela de risco por bairro">
+            <table class="tabela">
+              <caption class="sr">Risco de alagamento por bairro</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Bairro</th>
+                  <th scope="col">Zona</th>
+                  <th scope="col">Risco</th>
+                  <th scope="col">Por quê</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-risco"></tbody>
+            </table>
+          </div>
+        </details>
+      </section>
 
-    <section id="mapa-risco" aria-labelledby="t-mapa" class="cartao painel-mapa">
-      <div class="mapa-cabecalho">
-        <div><h2 id="t-mapa">Risco agora, por bairro</h2><p class="mudo">Previsão para as próximas 3 horas e sinais em tempo real.</p></div>
-        <time id="mapa-atualizado" class="carimbo" hidden></time>
-      </div>
-      <p class="legenda">
-        <span class="selo selo-baixo">Baixo</span>
-        <span class="selo selo-atencao">Atenção</span>
-        <span class="selo selo-alto">Alto</span>
-        <span class="selo selo-indisponivel">Previsão indisponível</span>
-        <span class="legenda-ocorrencia"><span class="ponto ocorrencia"></span> Ocorrência confirmada</span>
-      </p>
-      <div id="mapa" class="mapa" role="region" aria-label="Mapa de risco. A mesma informação está na tabela abaixo."></div>
-      <p id="mapa-status" class="mudo" role="status" hidden>O mapa de ruas está temporariamente indisponível. Os pontos e a tabela continuam disponíveis.</p>
-      <details class="lista-bairros">
-        <summary>Ver tabela de bairros</summary>
-        <table class="tabela" aria-describedby="t-mapa">
-        <caption class="sr">Risco de alagamento por bairro</caption>
-        <thead><tr><th scope="col">Bairro</th><th scope="col">Zona</th><th scope="col">Risco</th><th scope="col">Por quê</th></tr></thead>
-        <tbody id="tabela-risco"></tbody>
-        </table>
-      </details>
-    </section>
+      <section id="alertas-ativos" class="cartao painel-alertas" aria-labelledby="t-alertas">
+        <h2 id="t-alertas">Alertas ativos</h2>
+        <h3>Defesa Civil · São Paulo (capital)</h3>
+        <p id="avisos-oficiais-status" class="mudo" role="status">Consultando avisos oficiais…</p>
+        <ul id="avisos-oficiais" class="lista"></ul>
+        <h3>Alertas do Alaga Alerta</h3>
+        <ul id="lista-alertas" class="lista" aria-live="polite"></ul>
+      </section>
     </div>
 
     <section id="assistente" aria-labelledby="t-assistente" class="cartao">
@@ -129,7 +157,7 @@
       <ul id="lista-ocorrencias" class="lista"></ul>
     </section>
 
-    <section aria-labelledby="t-indicadores" class="cartao largo">
+    <section aria-labelledby="t-indicadores" class="cartao painel-indicadores">
       <h2 id="t-indicadores">Indicadores de impacto</h2>
       <p id="ind-nota" class="mudo"></p>
       <dl id="indicadores" class="indicadores"></dl>
