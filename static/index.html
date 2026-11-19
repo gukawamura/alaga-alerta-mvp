@@ -32,7 +32,7 @@
       <div>
         <p class="cidade"><span aria-hidden="true"></span> São Paulo, SP</p>
         <h1 id="t-intro">Risco de alagamento</h1>
-        <p>Acompanhe seu bairro e os avisos da Defesa Civil.</p>
+        <p>Previsão e avisos da Defesa Civil.</p>
       </div>
       <dl class="resumo-risco" aria-label="Resumo por nível de risco">
         <div>
@@ -58,7 +58,7 @@
     <div class="painel-principal">
       <section class="cartao painel-bairro" aria-labelledby="t-meu-bairro">
         <h2 id="t-meu-bairro">Meu bairro</h2>
-        <label for="sel-bairro">Escolha o seu bairro</label>
+        <label for="sel-bairro" class="sr">Escolha o seu bairro</label>
         <select id="sel-bairro"></select>
         <div id="meu-risco" class="meu-risco" aria-live="polite"></div>
       </section>
@@ -106,7 +106,10 @@
         <h2 id="t-alertas">Alertas ativos</h2>
         <h3>Defesa Civil · São Paulo (capital)</h3>
         <p id="avisos-oficiais-status" class="mudo" role="status">Consultando avisos oficiais…</p>
-        <ul id="avisos-oficiais" class="lista"></ul>
+        <details id="painel-avisos-oficiais" class="lista-bairros" hidden>
+          <summary>Ver avisos oficiais</summary>
+          <ul id="avisos-oficiais" class="lista"></ul>
+        </details>
         <h3>Alertas do Alaga Alerta</h3>
         <ul id="lista-alertas" class="lista" aria-live="polite"></ul>
       </section>

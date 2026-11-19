@@ -195,12 +195,14 @@
 
   async function atualizarAvisosOficiais() {
     const status = document.getElementById("avisos-oficiais-status");
+    const painel = document.getElementById("painel-avisos-oficiais");
     const lista = document.getElementById("avisos-oficiais");
     let dados;
     try {
       dados = await api("alertas/oficiais");
     } catch {
       status.textContent = "Consulta à Defesa Civil indisponível.";
+      painel.hidden = true;
       limpar(lista);
       return;
     }
@@ -212,8 +214,11 @@
         ? "Falha na atualização. Avisos ainda vigentes da consulta de " + quando(dados.atualizado_em) + "."
         : "Falha na atualização. Última consulta concluída em " + quando(dados.atualizado_em) + ".",
     };
+    const total = dados.avisos.length;
+    painel.hidden = total === 0;
+    painel.querySelector("summary").textContent = total === 1 ? "Ver 1 aviso oficial" : "Ver " + total + " avisos oficiais";
     limpar(lista);
-    status.textContent = mensagens[dados.status] || (dados.avisos.length
+    status.textContent = mensagens[dados.status] || (total
       ? "Última consulta: " + quando(dados.atualizado_em)
       : "Nenhum aviso vigente para a capital encontrado na consulta ao IDAP de " + quando(dados.atualizado_em) + ".");
     for (const aviso of dados.avisos) {
