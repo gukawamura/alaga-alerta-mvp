@@ -6,7 +6,7 @@
 | --- | --- |
 | Aplicação | API FastAPI, SQLite, mapa e tabela por bairro, alertas, ocorrências, sensores e indicadores. |
 | GenAI | API RAG na pasta `genai`. O MVP usa `ASSISTENTE_URL` para chamar o serviço e mantém a base local para quando ele estiver indisponível. |
-| Previsão | Estado de indisponibilidade no card, mapa e tabela. Leituras de perigo e ocorrências confirmadas continuam elevando o risco. O site identifica a origem da previsão. |
+| Previsão | O mapa e a tabela identificam a origem da previsão. O MVP público foi validado com previsão do DWD MOSMIX nas 22 áreas do catálogo. Leituras de perigo e ocorrências confirmadas também contribuem para o risco. |
 | Importação da Ouro | O importador aceita o CSV nativo e o formato anterior. Os dez bairros do Big Data têm correspondência na API. O catálogo agora tem 22 áreas. |
 | RPA | Jabaquara e Santo Amaro aceitam o envio de alertas. Reenvios equivalentes enquanto vigentes retornam o alerta existente. Alertas ativos da origem RPA contribuem para o risco exibido no mapa. |
 | Visão | A API solicita análise durante o envio. Se o serviço estiver ausente, informa indisponibilidade. Resultados confirmados aparecem na lista e no mapa na posição de referência do bairro. |
@@ -18,11 +18,10 @@
 
 | Ordem | Etapa | Critério de aceite |
 | --- | --- | --- |
-| 1 | Investigar a coleta de previsão no Render. | `GET /risco/agora` mostra previsão vigente e a fonte para as áreas atendidas. |
-| 2 | Manter a API do GenAI acessível ao ambiente hospedado. | Chat responde com fonte pelo LLM quando acessado pela URL pública. |
-| 3 | Validar a interface em navegador, celular e leitor de tela. Testar a imagem Docker e a partida pelo Compose. | Mapa e tabela exibem o mesmo estado, a interação por teclado funciona, erros têm mensagem clara, `/health` responde e o SQLite preserva o estado após reinício. |
-| 4 | Confirmar a infraestrutura Terraform da equipe e preparar o deploy. Completar os workflows com Gitleaks, Semgrep, Trivy e deploy automático. | URL HTTPS pública testada em janela anônima; banco em volume persistente; pipeline com evidências de falha e recuperação; dashboard com as quatro métricas de ouro e um alerta disparado. |
-| 5 | Reunir os links e evidências dos outros componentes. | Links confirmados pela equipe e evidências conforme o enunciado de cada disciplina. |
+| 1 | Manter a API do GenAI acessível ao ambiente hospedado. | Chat responde com fonte pelo LLM quando acessado pela URL pública. |
+| 2 | Validar a interface em navegador, celular e leitor de tela. Testar a imagem Docker e a partida pelo Compose. | Mapa e tabela exibem o mesmo estado, a interação por teclado funciona, erros têm mensagem clara, `/health` responde e o SQLite preserva o estado após reinício do Compose com volume. |
+| 3 | Confirmar a infraestrutura Terraform da equipe e preparar os workflows de DevOps. | Banco em volume persistente, pipeline com evidências de falha e recuperação, dashboard com as quatro métricas de ouro e um alerta disparado. |
+| 4 | Reunir os links e evidências dos outros componentes. | Links confirmados pela equipe e evidências conforme o enunciado de cada disciplina. |
 
 Visão Computacional e RPA ficam com os responsáveis pelas respectivas
 disciplinas. A integração ao MVP pode ser validada quando eles entregarem
