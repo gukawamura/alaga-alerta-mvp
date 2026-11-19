@@ -202,6 +202,9 @@
       carregando: "Consultando avisos oficiais…",
       desativado: "Consulta a avisos oficiais desativada nesta instalação.",
       indisponivel: "Consulta à Defesa Civil indisponível.",
+      desatualizado: dados.avisos.length
+        ? "Falha na atualização. Avisos ainda vigentes da consulta de " + quando(dados.atualizado_em) + "."
+        : "Falha na atualização. Última consulta concluída em " + quando(dados.atualizado_em) + ".",
     };
     limpar(lista);
     status.textContent = mensagens[dados.status] || (dados.avisos.length

@@ -57,6 +57,26 @@ def test_documentacao_interativa(cliente):
     assert "/leituras" in cliente.get("/openapi.json").text
 
 
+def test_idap_preserva_avisos_vigentes_apos_falha(cliente):
+    referencia = agora()
+    estado = main.app.state.idap
+    fontes.marcar_falha_idap(estado)
+    assert cliente.get("/alertas/oficiais").json()["status"] == "indisponivel"
+
+    estado.update(
+        status="ok", atualizado_em=referencia.isoformat(),
+        avisos=[
+            {"id": "vigente", "valido_ate": (referencia + timedelta(hours=1)).isoformat()},
+            {"id": "expirado", "valido_ate": (referencia - timedelta(hours=1)).isoformat()},
+        ],
+    )
+    fontes.marcar_falha_idap(estado)
+    dados = cliente.get("/alertas/oficiais").json()
+    assert dados["status"] == "desatualizado"
+    assert dados["atualizado_em"] == referencia.isoformat()
+    assert [aviso["id"] for aviso in dados["avisos"]] == ["vigente"]
+
+
 def test_previsao_regional_quando_open_meteo_limita(cliente, monkeypatch):
     referencia = hora_cheia(agora())
     monkeypatch.setattr(fontes, "agora", lambda: referencia)

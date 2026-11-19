@@ -49,7 +49,7 @@ async def ciclo_de_vida(_app: FastAPI):
             asyncio.create_task(fontes.atualizar_periodicamente("Open-Meteo", 1800, fontes.coletar_previsao)),
             asyncio.create_task(fontes.atualizar_periodicamente(
                 "IDAP", 600, lambda cliente: fontes.coletar_idap(cliente, estado_idap),
-                lambda: estado_idap.update(status="indisponivel"),
+                lambda: fontes.marcar_falha_idap(estado_idap), intervalo_falha=120,
             )),
         ]
     else:

@@ -54,13 +54,26 @@ def _area_capital(area, pontos):
                for parte in re.split(r"[;,\n]", nome))
 
 
-def ler_avisos(dados, referencia, pontos=()):
-    raiz = ElementTree.fromstring(dados)
+def _alertas_do_feed(dados):
+    conteudo = io.StringIO(dados) if isinstance(dados, str) else io.BytesIO(dados)
+    eventos = iter(ElementTree.iterparse(conteudo, events=("start", "end")))
+    _, raiz = next(eventos)
     if raiz.tag != ATOM + "feed":
         raise ValueError("Formato inesperado no feed IDAP")
+    for evento, elemento in eventos:
+        if evento != "end":
+            continue
+        if elemento.tag == CAP + "alert":
+            yield elemento
+            elemento.clear()
+        elif elemento.tag == ATOM + "entry":
+            elemento.clear()
+
+
+def ler_avisos(dados, referencia, pontos=()):
     descartados = set()
     avisos = {}
-    for alerta in raiz.iter(CAP + "alert"):
+    for alerta in _alertas_do_feed(dados):
         if _texto(alerta, "status") != "Actual" or _texto(alerta, "scope") != "Public":
             continue
         try:
@@ -110,16 +123,25 @@ def ler_avisos(dados, referencia, pontos=()):
 
 async def coletar_idap(cliente, estado):
     dados = bytearray()
-    async with cliente.stream("GET", IDAP_URL) as resposta:
-        resposta.raise_for_status()
-        async for bloco in resposta.aiter_bytes():
-            dados.extend(bloco)
-            if len(dados) > 64 * 1024 * 1024:
-                raise ValueError("Feed IDAP acima do tamanho esperado")
+    try:
+        async with asyncio.timeout(240):
+            async with cliente.stream("GET", IDAP_URL, timeout=httpx.Timeout(65, connect=15)) as resposta:
+                resposta.raise_for_status()
+                async for bloco in resposta.aiter_bytes():
+                    dados.extend(bloco)
+                    if len(dados) > 64 * 1024 * 1024:
+                        raise ValueError("Feed IDAP acima do tamanho esperado")
+    except (httpx.TransportError, TimeoutError):
+        log.warning("Download IDAP interrompido após %d bytes", len(dados))
+        raise
     referencia = agora()
     pontos = [(b["lat"], b["lon"]) for b in db.consultar("SELECT lat,lon FROM bairros")]
     avisos = await asyncio.to_thread(ler_avisos, dados, referencia, pontos)
     estado.update(status="ok", atualizado_em=iso(referencia), avisos=avisos)
+
+
+def marcar_falha_idap(estado):
+    estado["status"] = "desatualizado" if estado["atualizado_em"] else "indisponivel"
 
 
 async def _lotes_open_meteo(cliente, bairros):
@@ -202,13 +224,16 @@ async def coletar_previsao(cliente):
         )
 
 
-async def atualizar_periodicamente(nome, segundos, atualizar, falhou=None):
+async def atualizar_periodicamente(nome, segundos, atualizar, falhou=None, *, intervalo_falha=None):
     async with httpx.AsyncClient(timeout=35, follow_redirects=True) as cliente:
         while True:
+            intervalo = segundos
             try:
                 await atualizar(cliente)
-            except (httpx.HTTPError, ValueError, KeyError, TypeError, ElementTree.ParseError) as erro:
+            except (httpx.HTTPError, TimeoutError, ValueError, KeyError, TypeError, ElementTree.ParseError) as erro:
                 log.warning("Falha na coleta de %s (%s)", nome, type(erro).__name__)
                 if falhou:
                     falhou()
-            await asyncio.sleep(segundos)
+                if intervalo_falha is not None:
+                    intervalo = intervalo_falha
+            await asyncio.sleep(intervalo)
