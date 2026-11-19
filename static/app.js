@@ -269,10 +269,24 @@
           .addTo(camadaOcorrencias);
       }
     }
+    const painel = document.getElementById("painel-ocorrencias");
+    const status = document.getElementById("ocorrencias-status");
     const ul = document.getElementById("lista-ocorrencias");
+    const recentes = lista.slice(0, 10);
+
+    painel.hidden = recentes.length === 0;
+    status.hidden = recentes.length > 0;
     limpar(ul);
-    if (!lista.length) { ul.append(el("li", null, "Nenhuma ocorrência nas últimas 24 horas.")); return; }
-    for (const o of lista.slice(0, 10)) {
+    if (!recentes.length) {
+      status.textContent = "Nenhuma ocorrência registrada.";
+      painel.open = false;
+      return;
+    }
+
+    painel.querySelector("summary").textContent = lista.length === 1
+      ? "Ver 1 ocorrência"
+      : "Ver " + recentes.length + (recentes.length < lista.length ? " de " + lista.length : "") + " ocorrências";
+    for (const o of recentes) {
       const st = o.status === "confirmada" ? "confirmada" : o.status === "pendente" ? "não confirmada" : "descartada";
       const conf = o.confianca != null ? " · confiança " + Math.round(o.confianca * 100) + "%" : "";
       ul.append(el("li", null, el("strong", null, TIPOS[o.tipo] || o.tipo), " em " + o.bairro_nome + " (" + st + ")",

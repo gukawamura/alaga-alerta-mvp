@@ -204,6 +204,7 @@ button:disabled { background: #6b7580; cursor: wait; }
 
 .lista-bairros summary { color: var(--primaria); font-weight: 700; min-height: 44px; padding: .66rem .25rem; cursor: pointer; }
 .lista-bairros[open] summary { margin-bottom: .5rem; }
+.ocorrencias-status { margin: 0; min-height: 44px; padding: .66rem .25rem; font-size: inherit; }
 .tabela-rolagem { overflow-x: auto; border: 1px solid var(--borda); border-radius: 10px; }
 .tabela { width: 100%; border-collapse: collapse; font-size: .95rem; }
 .tabela th, .tabela td { text-align: left; padding: .5rem; border-bottom: 1px solid var(--borda); vertical-align: top; }

@@ -156,15 +156,19 @@
 
       <section aria-labelledby="t-ocorrencias" class="cartao">
         <h2 id="t-ocorrencias">Ocorrências nas últimas 24 horas</h2>
-        <ul id="lista-ocorrencias" class="lista"></ul>
+        <p id="ocorrencias-status" class="ocorrencias-status mudo" role="status">Consultando ocorrências…</p>
+        <details id="painel-ocorrencias" class="lista-bairros" hidden>
+          <summary>Ver ocorrências</summary>
+          <ul id="lista-ocorrencias" class="lista"></ul>
+        </details>
+      </section>
+
+      <section aria-labelledby="t-indicadores" class="cartao">
+        <h2 id="t-indicadores">Indicadores de impacto</h2>
+        <p id="ind-nota" class="mudo"></p>
+        <dl id="indicadores" class="indicadores"></dl>
       </section>
     </div>
-
-    <section aria-labelledby="t-indicadores" class="cartao">
-      <h2 id="t-indicadores">Indicadores de impacto</h2>
-      <p id="ind-nota" class="mudo"></p>
-      <dl id="indicadores" class="indicadores"></dl>
-    </section>
   </main>
 
   <footer class="rodape">
