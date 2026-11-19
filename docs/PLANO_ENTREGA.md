@@ -10,26 +10,25 @@
 | Importação da Ouro | O importador aceita o CSV nativo e o formato anterior. Os dez bairros do Big Data têm correspondência na API. O catálogo agora tem 22 áreas. |
 | RPA | Jabaquara e Santo Amaro aceitam o envio de alertas. Reenvios equivalentes enquanto vigentes retornam o alerta existente. Alertas ativos da origem RPA contribuem para o risco exibido no mapa. |
 | Visão | A API solicita análise durante o envio. Se o serviço estiver ausente, informa indisponibilidade. Resultados confirmados aparecem na lista e no mapa na posição de referência do bairro. |
-| Infraestrutura | Dockerfile, Compose, CI de testes e build, workflow para coleta direta e endpoint de métricas. |
+| Infraestrutura | Dockerfile, Compose, endpoints de saúde e métricas, e [MVP publicado no Render](https://alaga-alerta-mvp.onrender.com/). |
+| Entrega de Big Data | Relatório finalizado. As evidências incluem coletas simultâneas no Airflow, ingestão incremental, consultas da Ouro e integração com o MVP local. [Repositório de Big Data](https://github.com/gukawamura/alaga-big-data). |
+| Entrega de GenAI | Relatório, notebook com saídas e avaliação publicados. A integração com a API central foi validada no MVP local. [Repositório de GenAI](https://github.com/gukawamura/alaga-genai). |
 
 ## O que falta e como validar
 
 | Ordem | Etapa | Critério de aceite |
 | --- | --- | --- |
-| 1 | Registrar as evidências de Big Data. O Databricks já executou Bronze, Prata e Ouro, e a API local recebeu 120 linhas de previsão vigente para 10 bairros. | Capturas e resultados reproduzíveis para os requisitos 01 a 09, incluindo a tela com a origem `Ouro (Databricks)` e o relatório em PDF. |
+| 1 | Investigar a coleta de previsão no Render. | `GET /risco/agora` mostra previsão vigente e a fonte para as áreas atendidas. |
 | 2 | Manter a API do GenAI acessível ao ambiente hospedado. | Chat responde com fonte pelo LLM quando acessado pela URL pública. |
 | 3 | Validar a interface em navegador, celular e leitor de tela. Testar a imagem Docker e a partida pelo Compose. | Mapa e tabela exibem o mesmo estado, a interação por teclado funciona, erros têm mensagem clara, `/health` responde e o SQLite preserva o estado após reinício. |
 | 4 | Confirmar a infraestrutura Terraform da equipe e preparar o deploy. Completar os workflows com Gitleaks, Semgrep, Trivy e deploy automático. | URL HTTPS pública testada em janela anônima; banco em volume persistente; pipeline com evidências de falha e recuperação; dashboard com as quatro métricas de ouro e um alerta disparado. |
-| 5 | Completar a Ficha Técnica e preparar a entrega. | README com integrantes, RMs, URL e links; evidências das integrações e vídeos gravados usando a URL publicada. |
-
-A publicação depende da conta ou infraestrutura da equipe e das URLs dos
-serviços reais. O workspace revisado ainda não contém essas configurações.
+| 5 | Reunir os links e evidências dos outros componentes. | Links confirmados pela equipe e evidências conforme o enunciado de cada disciplina. |
 
 Visão Computacional e RPA ficam com os responsáveis pelas respectivas
 disciplinas. A integração ao MVP pode ser validada quando eles entregarem
 os serviços e executarem os fluxos previstos nos contratos da API.
 
-## Plano de coleta de evidências de Big Data
+## Reprodução das evidências de Big Data
 
 | Ordem | Ação | Evidência a salvar |
 | --- | --- | --- |
