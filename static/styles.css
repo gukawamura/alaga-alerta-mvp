@@ -74,7 +74,7 @@ main {
   display: grid;
   align-items: start;
   gap: var(--espaco-painel);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .introducao {
@@ -117,19 +117,21 @@ main {
 }
 .painel-principal {
   grid-column: 1 / -1;
+}
+
+.painel-principal,
+.coluna-painel {
   display: grid;
-  align-items: start;
-  grid-template-columns: minmax(18rem, 1fr) minmax(0, 2.15fr);
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "bairro mapa"
-    "alertas mapa";
+  align-content: start;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--espaco-painel);
 }
-.painel-bairro { grid-area: bairro; }
-.painel-mapa { grid-area: mapa; }
-.painel-alertas { grid-area: alertas; }
-.painel-indicadores { grid-column: 1 / -1; }
+
+.painel-principal.com-colunas {
+  align-items: start;
+  grid-template-columns: minmax(18rem, 1fr) minmax(0, 2.15fr);
+}
+
 h2 { margin: 0 0 .5rem; font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.2; letter-spacing: -.025em; }
 h3 { margin: .6rem 0 .3rem; font-size: .97rem; }
 .painel-alertas > .mudo { margin: .3rem 0; }
@@ -235,11 +237,6 @@ button:disabled { background: #6b7580; cursor: wait; }
 @media (max-width: 920px) {
   .introducao { grid-template-columns: minmax(0, 1fr); }
   .resumo-risco { width: 100%; max-width: 40rem; }
-  .painel-principal {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    grid-template-areas: "bairro" "mapa" "alertas";
-  }
 }
 
 @media (max-width: 680px) {
@@ -247,7 +244,6 @@ button:disabled { background: #6b7580; cursor: wait; }
   .topo nav { grid-column: 1 / -1; grid-row: 2; border-top: 1px solid var(--borda); }
   .topo nav a { flex: 1 1 0; padding-inline: .25rem; }
   .topo .emergencia { grid-column: 2; grid-row: 1; }
-  main { grid-template-columns: minmax(0, 1fr); }
   .mapa { height: clamp(17rem, 46vh, 23rem); }
 }
 

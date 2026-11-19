@@ -56,14 +56,14 @@
     <div id="aviso-geral" class="aviso-geral" role="alert" hidden></div>
 
     <div class="painel-principal">
-      <section class="cartao painel-bairro" aria-labelledby="t-meu-bairro">
+      <section class="cartao" data-coluna="esquerda" aria-labelledby="t-meu-bairro">
         <h2 id="t-meu-bairro">Meu bairro</h2>
         <label for="sel-bairro" class="sr">Escolha o seu bairro</label>
         <select id="sel-bairro"></select>
         <div id="meu-risco" class="meu-risco" aria-live="polite"></div>
       </section>
 
-      <section id="mapa-risco" class="cartao painel-mapa" aria-labelledby="t-mapa">
+      <section id="mapa-risco" class="cartao" aria-labelledby="t-mapa">
         <div class="mapa-cabecalho">
           <div>
             <h2 id="t-mapa">Risco agora, por bairro</h2>
@@ -102,7 +102,7 @@
         </details>
       </section>
 
-      <section id="alertas-ativos" class="cartao painel-alertas" aria-labelledby="t-alertas">
+      <section id="alertas-ativos" class="cartao painel-alertas" data-coluna="esquerda" aria-labelledby="t-alertas">
         <h2 id="t-alertas">Alertas ativos</h2>
         <h3>Defesa Civil · São Paulo (capital)</h3>
         <p id="avisos-oficiais-status" class="mudo" role="status">Consultando avisos oficiais…</p>
@@ -113,54 +113,54 @@
         <h3>Alertas do Alaga Alerta</h3>
         <ul id="lista-alertas" class="lista" aria-live="polite"></ul>
       </section>
+
+      <section id="assistente" aria-labelledby="t-assistente" class="cartao" data-coluna="esquerda">
+        <h2 id="t-assistente">Pergunte ao assistente</h2>
+        <p class="mudo">Responde com base nas orientações da Defesa Civil e diz quando não sabe. Não escreva dados pessoais.</p>
+        <div id="chat" class="chat" aria-live="polite"></div>
+        <form id="form-pergunta" class="linha">
+          <label for="pergunta" class="sr">Sua pergunta</label>
+          <input id="pergunta" name="pergunta" type="text" maxlength="500" autocomplete="off"
+                 placeholder="Ex.: o que faço se meu carro ficar preso na água?" required>
+          <button type="submit">Perguntar</button>
+        </form>
+        <div class="sugestoes">
+          <button type="button" class="chip" data-pergunta="O que faço se meu carro ficar preso na água?">Carro preso na água</button>
+          <button type="button" class="chip" data-pergunta="Posso atravessar uma rua alagada?">Atravessar rua alagada</button>
+          <button type="button" class="chip" data-pergunta="Para quem eu ligo em emergência?">Telefones de emergência</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="t-foto" class="cartao">
+        <h2 id="t-foto">Viu alagamento? Mande uma foto</h2>
+        <p class="mudo">O serviço de visão analisa a foto durante o envio. Envie imagens sem rostos ou placas visíveis.</p>
+        <form id="form-foto">
+          <label for="foto-bairro">Bairro da foto</label>
+          <select id="foto-bairro" name="bairro_id" required></select>
+          <label for="foto-arquivo">Foto (JPG, PNG ou WEBP, até 5 MB)</label>
+          <input id="foto-arquivo" name="arquivo" type="file" accept="image/jpeg,image/png,image/webp" required>
+          <button type="submit">Enviar foto</button>
+        </form>
+        <p id="foto-status" class="status" aria-live="polite"></p>
+      </section>
+
+      <section aria-labelledby="t-sensores" class="cartao" data-coluna="esquerda">
+        <h2 id="t-sensores">Sensores nos bueiros</h2>
+        <ul id="lista-leituras" class="lista"></ul>
+        <div id="simulacao-bueiros" hidden>
+          <h3>Simulação de bueiros</h3>
+          <p class="mudo">Níveis ilustrativos calculados com a previsão do Open-Meteo. Leituras reais aparecem acima quando disponíveis.</p>
+          <ul id="lista-leituras-simuladas" class="lista"></ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="t-ocorrencias" class="cartao">
+        <h2 id="t-ocorrencias">Ocorrências nas últimas 24 horas</h2>
+        <ul id="lista-ocorrencias" class="lista"></ul>
+      </section>
     </div>
 
-    <section id="assistente" aria-labelledby="t-assistente" class="cartao">
-      <h2 id="t-assistente">Pergunte ao assistente</h2>
-      <p class="mudo">Responde com base nas orientações da Defesa Civil e diz quando não sabe. Não escreva dados pessoais.</p>
-      <div id="chat" class="chat" aria-live="polite"></div>
-      <form id="form-pergunta" class="linha">
-        <label for="pergunta" class="sr">Sua pergunta</label>
-        <input id="pergunta" name="pergunta" type="text" maxlength="500" autocomplete="off"
-               placeholder="Ex.: o que faço se meu carro ficar preso na água?" required>
-        <button type="submit">Perguntar</button>
-      </form>
-      <div class="sugestoes">
-        <button type="button" class="chip" data-pergunta="O que faço se meu carro ficar preso na água?">Carro preso na água</button>
-        <button type="button" class="chip" data-pergunta="Posso atravessar uma rua alagada?">Atravessar rua alagada</button>
-        <button type="button" class="chip" data-pergunta="Para quem eu ligo em emergência?">Telefones de emergência</button>
-      </div>
-    </section>
-
-    <section aria-labelledby="t-foto" class="cartao">
-      <h2 id="t-foto">Viu alagamento? Mande uma foto</h2>
-      <p class="mudo">O serviço de visão analisa a foto durante o envio. Envie imagens sem rostos ou placas visíveis.</p>
-      <form id="form-foto">
-        <label for="foto-bairro">Bairro da foto</label>
-        <select id="foto-bairro" name="bairro_id" required></select>
-        <label for="foto-arquivo">Foto (JPG, PNG ou WEBP, até 5 MB)</label>
-        <input id="foto-arquivo" name="arquivo" type="file" accept="image/jpeg,image/png,image/webp" required>
-        <button type="submit">Enviar foto</button>
-      </form>
-      <p id="foto-status" class="status" aria-live="polite"></p>
-    </section>
-
-    <section aria-labelledby="t-sensores" class="cartao">
-      <h2 id="t-sensores">Sensores nos bueiros</h2>
-      <ul id="lista-leituras" class="lista"></ul>
-      <div id="simulacao-bueiros" hidden>
-        <h3>Simulação de bueiros</h3>
-        <p class="mudo">Níveis ilustrativos calculados com a previsão do Open-Meteo. Leituras reais aparecem acima quando disponíveis.</p>
-        <ul id="lista-leituras-simuladas" class="lista"></ul>
-      </div>
-    </section>
-
-    <section aria-labelledby="t-ocorrencias" class="cartao">
-      <h2 id="t-ocorrencias">Ocorrências nas últimas 24 horas</h2>
-      <ul id="lista-ocorrencias" class="lista"></ul>
-    </section>
-
-    <section aria-labelledby="t-indicadores" class="cartao painel-indicadores">
+    <section aria-labelledby="t-indicadores" class="cartao">
       <h2 id="t-indicadores">Indicadores de impacto</h2>
       <p id="ind-nota" class="mudo"></p>
       <dl id="indicadores" class="indicadores"></dl>

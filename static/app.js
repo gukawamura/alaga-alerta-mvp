@@ -358,6 +358,37 @@
   }
 
   // ------------------------------------------------------------ ciclo
+  function iniciarLayout() {
+    const painel = document.querySelector(".painel-principal");
+    const cartoes = Array.from(painel.children);
+    const esquerda = el("div", { class: "coluna-painel" });
+    const direita = el("div", { class: "coluna-painel" });
+    const desktop = window.matchMedia("(min-width: 921px)");
+
+    function organizar() {
+      const foco = document.activeElement;
+      painel.classList.toggle("com-colunas", desktop.matches);
+      if (desktop.matches) {
+        painel.append(esquerda, direita);
+        for (const cartao of cartoes) {
+          const coluna = cartao.dataset.coluna === "esquerda" ? esquerda : direita;
+          coluna.append(cartao);
+        }
+      } else {
+        painel.append(...cartoes);
+        esquerda.remove();
+        direita.remove();
+      }
+      if (painel.contains(foco) && foco !== document.activeElement) {
+        foco.focus({ preventScroll: true });
+      }
+      if (mapa) mapa.invalidateSize({ pan: false });
+    }
+
+    desktop.addEventListener("change", organizar);
+    organizar();
+  }
+
   async function atualizarTudo() {
     const tarefas = [atualizarRisco, carregarBairros, atualizarAlertas, atualizarAvisosOficiais,
       atualizarLeituras, atualizarSimulacaoBueiros, atualizarOcorrencias, atualizarIndicadores];
@@ -381,6 +412,7 @@
       document.querySelectorAll("main section:not(.introducao)").forEach((secao) => { secao.hidden = true; });
       return;
     }
+    iniciarLayout();
     iniciarMapa(); iniciarAssistente(); iniciarFoto();
     await atualizarTudo();
     setInterval(atualizarTudo, 30000);
