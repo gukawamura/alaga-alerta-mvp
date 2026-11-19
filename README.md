@@ -5,6 +5,8 @@ sobre como agir.
 
 Global Solution 2026.2 · FIAP · Engenharia de Software 4º ano · CitizenTech
 
+[Abrir o MVP](https://alaga-alerta-mvp.onrender.com/) · [Documentação da API](https://alaga-alerta-mvp.onrender.com/docs)
+
 ## Integrantes
 
 | Nome completo | RM |
@@ -29,6 +31,13 @@ Global Solution 2026.2 · FIAP · Engenharia de Software 4º ano · CitizenTech
 | Indicadores de impacto | Antecedência média do alerta, taxa de acerto, cobertura de ocorrências, população monitorada (`GET /indicadores`) |
 | ODS conectados | **11.5** · Apoia decisões de deslocamento durante alagamentos. **13.1** · Combina previsão e avisos para apoiar a preparação para chuvas intensas. **3.d** · Orienta sobre riscos à saúde em enchentes. **9.1** · Ajuda a identificar áreas onde o monitoramento da drenagem é relevante. |
 
+## Usar o painel
+
+- **Meu bairro e mapa.** Escolha uma das 22 áreas monitoradas para ver o risco, as orientações e a fonte da previsão. O mapa considera as próximas três horas e os sinais disponíveis. A tabela de bairros oferece a mesma informação em texto.
+- **Avisos e alertas.** Abra a lista de avisos oficiais da Defesa Civil para ler os detalhes. Os alertas registrados no Alaga Alerta aparecem em uma lista própria.
+- **Ocorrências.** O cartão conta os registros das últimas 24 horas e lista até os 10 mais recentes quando aberto. Registros mais antigos continuam no banco enquanto o armazenamento os preservar. A API aceita consultas de até 60 dias, e os indicadores usam o histórico disponível.
+- **Assistente.** Consulte orientações sobre alagamentos pelo chat. Evite incluir dados pessoais na pergunta.
+
 ## Arquitetura
 
 ```
@@ -43,15 +52,13 @@ Pergunta no chat ──► API ──► LLM com RAG (ASSISTENTE_URL) ───�
                                      /metrics ──► Prometheus/Grafana (DevOps)
 ```
 
-Contratos de cada integração: [`docs/CONTRATOS.md`](docs/CONTRATOS.md).
-Andamento da entrega: [`docs/PLANO_ENTREGA.md`](docs/PLANO_ENTREGA.md).
-[Documentação interativa da API pública](https://alaga-alerta-mvp.onrender.com/docs).
+Os caminhos, os campos e os exemplos de integração estão nos [contratos da API](docs/CONTRATOS.md).
 
 | Componente | Situação da integração |
 | --- | --- |
-| Defesa Civil | O MVP público consulta o feed IDAP e disponibiliza os avisos em `GET /alertas/oficiais`. |
-| Big Data | CSV da previsão Ouro importado via `POST /risco` e exibido no MVP local. A importação demonstrada foi manual. |
-| GenAI | A API do MVP local chamou o RAG com Ollama via `ASSISTENTE_URL`. No Render, o chat usa a base de contingência. |
+| Defesa Civil | A API consulta o feed IDAP e disponibiliza os avisos em `GET /alertas/oficiais`. |
+| Big Data | CSV da previsão Ouro importado via `POST /risco` e exibido no MVP local. A importação demonstrada foi manual. [Pipeline de Big Data](https://github.com/gukawamura/alaga-big-data) |
+| GenAI | A API do MVP local chamou o RAG com Ollama via `ASSISTENTE_URL`. No Render, o chat usa a base de contingência. [Implementação e avaliação de GenAI](https://github.com/gukawamura/alaga-genai) |
 | RPA | `POST /alertas` e `POST /ocorrencias` disponíveis. O MVP evita alertas duplicados e considera alertas ativos do RPA no mapa. O teste com o robô externo fica com a equipe de RPA. |
 | Visão computacional | `POST /fotos` chama o serviço configurado em `VISAO_URL`. `POST /deteccoes` recebe resultados. A validação do modelo externo fica com a equipe de visão. |
 | ESP32 | `POST /leituras` recebe leituras reais. A validação do hardware fica com a equipe de Maker Lab. |
@@ -121,11 +128,11 @@ pública. A equipe do RPA pode testar um envio e um reenvio em ambiente de
 teste com a mesma chave do servidor.
 
 Por padrão, `FONTES_PUBLICAS=1`, `DADOS_DEMO=0` e `SEED_AUTOMATICO=0`.
-Na inicialização, a API tenta coletar a previsão do Open-Meteo e os avisos
-da Defesa Civil pelo IDAP, com atualizações a cada 30 e 10 minutos,
-respectivamente. O risco calculado pelo MVP e os avisos oficiais aparecem
-em áreas próprias. O recorte do IDAP usa o município indicado no aviso
-ou polígonos que cobrem pontos do catálogo de bairros.
+Na inicialização, a API agenda a coleta da previsão do Open-Meteo a cada
+30 minutos e a dos avisos do IDAP a cada 10 minutos. O recorte dos avisos usa
+o município indicado ou os polígonos que cobrem pontos do catálogo de bairros.
+Quando o IDAP falha, a API tenta de novo após dois minutos. O painel sinaliza
+a falha e exibe apenas os avisos da última consulta que ainda estiverem vigentes.
 
 Quando o Open-Meteo limita a coleta, o mapa usa a previsão regional do
 [DWD MOSMIX](https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_L/).
@@ -138,14 +145,11 @@ de bueiro conforme a chuva horária prevista pelo Open-Meteo. Sem previsão
 vigente, ou com uma leitura real recebida na última hora para o bairro,
 a simulação não aparece. Ela não é gravada no banco e não entra no risco,
 nos indicadores ou nos alertas. Desative com `SIMULAR_BUEIROS=0`.
-O ESP32 pode enviar leituras reais em `POST /leituras`. A API de
-estações do Cemaden é uma fonte hidrológica a avaliar para estações com
-cobertura conhecida. O nível em uma estação de rio tem seu próprio ponto
-de medição e não representa a altura da água em um bueiro.
+O ESP32 pode enviar leituras reais em `POST /leituras`.
 
 Com `DADOS_DEMO=0`, os registros simulados identificados ficam ocultos,
 inclusive em bancos criados antes da mudança. Use `FONTES_PUBLICAS=0`
-se a publicação da previsão for responsabilidade da infraestrutura externa.
+para desativar as coletas automáticas do Open-Meteo e do IDAP nessa instância.
 
 Para simular um temporal, inicialize uma instância de demonstração com
 `DADOS_DEMO=1`, `SEED_AUTOMATICO=1` e um `DB_PATH` separado.
@@ -160,10 +164,10 @@ python scripts/simular_evento.py --url http://localhost:8000 --chave dev --calmo
 
 - Credenciais só por variável de ambiente (`.env` fora do Git, GitHub Secrets na nuvem). Rotas de escrita exigem `X-API-Key`; sem chave configurada, ficam bloqueadas.
 - O cidadão escolhe o bairro. A API central retém o resultado da detecção. Pelo contrato, o serviço de visão deve anonimizar rostos e placas. `POST /deteccoes` exige a confirmação `imagem_anonimizada=true`.
-- Perguntas do chat passam por remoção de CPF, telefone e e-mail antes de ir ao LLM e não são armazenadas.
+- A API filtra padrões de CPF, telefone e e-mail antes de encaminhar perguntas ao LLM. O chat não grava as perguntas no SQLite.
 - Limite de requisições por IP no chat e no envio de fotos; cabeçalhos de segurança (CSP, nosniff, no-referrer).
-- Acessibilidade: nível de risco com texto e símbolo, tabela equivalente ao mapa, foco visível, link "pular para o conteúdo" e layout responsivo. Sem conexão com a API, o site avisa e mostra o último resultado disponível em cache.
-- Dados pessoais armazenados: nenhum. Dados guardados: risco por bairro, alertas, ocorrências (tipo, bairro, horário, confiança) e leituras de sensores.
+- Acessibilidade: nível de risco com texto e símbolo, tabela equivalente ao mapa, foco visível, link "pular para o conteúdo" e layout responsivo. Em caso de falha na atualização do risco, o site sinaliza o problema e pode manter os dados já carregados na página.
+- O banco guarda risco por bairro, alertas, registros de ocorrências e leituras de sensores.
 
 ## Estrutura
 
